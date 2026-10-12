@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ID Card Generator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="authScreen">
+  <div class="auth-shell">
+    <div class="auth-brand">
+      <svg class="circuit" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke="#3f8fd8" stroke-width="1.4">
+<polyline points="0,80 70,80 100,110 220,110"/><polyline points="0,150 40,150 70,180 70,260 120,310"/><polyline points="400,60 330,60 300,90 300,170"/><polyline points="400,230 340,230 310,260 230,260 200,290"/><polyline points="60,500 60,430 110,380 200,380"/><polyline points="400,400 320,400 290,430 290,500"/></g>
+<g fill="#19b4d6"><circle cx="220" cy="110" r="4"/><circle cx="120" cy="310" r="4"/><circle cx="300" cy="170" r="4"/><circle cx="200" cy="290" r="4"/><circle cx="200" cy="380" r="4"/><circle cx="0" cy="80" r="3"/></g></svg><svg class="gear" viewBox="-60 -60 120 120" aria-hidden="true"><g fill="none" stroke="#7fc4ff" stroke-width="3"><circle r="46" stroke-width="12" stroke-dasharray="6.02 6.02"/><circle r="40"/><circle r="26"/><circle r="9"/></g></svg>
+      <span class="badge">Autonomous · Student Portal</span>
+      <h1>Student<span>ID Card Studio</span></h1>
+      <p class="college" id="brandName">Raghu Engineering College</p>
+      <ul>
+        <li>Design your ID card with a live preview</li>
+        <li>Add your photo and the college logo</li>
+        <li>Download a high-resolution PNG or print it</li>
+      </ul>
+    </div>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button id="tabLogin" class="active">Log in</button>
+        <button id="tabSignup">Sign up</button>
+      </div>
+      <h2 id="authTitle">Welcome back</h2>
+      <p class="sub" id="authSub">Log in with your college email and password.</p>
+      <div class="auth-field">
+        <label>College email</label>
+        <input id="authEmail" type="email" autocomplete="username" placeholder="24981a42xx@raghuenggcollege.in">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="pwrap"><input id="authPass" type="password" autocomplete="current-password" placeholder="••••••••"><button type="button" class="eye" id="pwToggle" aria-label="Show password">Show</button></div>
+      </div>
+      <ul class="pw-reqs hidden" id="pwReqs">
+        <li id="reqLen">8+ characters</li>
+        <li id="reqUpper">One uppercase letter</li>
+        <li id="reqNum">One number</li>
+        <li id="reqSpecial">One special character</li>
+      </ul>
+      <p class="auth-error" id="authError"></p>
+      <button class="btn-primary auth-submit" id="authSubmit">Log in</button>
+      <p class="auth-foot">Only a valid @raghuenggcollege.in address can sign up — one account per email, one card per account. Accounts and cards are stored in this browser.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<div id="appScreen" class="hidden">
+<div class="nav"><div class="nav-in">
+  <div class="logo"><svg viewBox="-60 -60 120 120" aria-hidden="true"><rect x="-56" y="-56" width="112" height="112" rx="22" fill="#f5a623"/><g fill="none" stroke="#08182e" stroke-width="7"><circle r="30" stroke-width="12" stroke-dasharray="7.85 7.85"/><circle r="22"/><circle r="8" fill="#08182e"/></g></svg><div><b>ID Card Studio</b><small id="navCollege">Raghu Engineering College</small></div></div>
+  <div class="nav-right">
+    <div class="user-chip"><span class="avatar" id="avatarInitial">?</span><span id="whoami"></span></div>
+    <button id="logoutBtn">Log out</button>
+  </div>
+</div></div>
+
+<div class="shell">
+  <div class="hero">
+    <svg class="hero-gear" viewBox="-60 -60 120 120" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="3"><circle r="46" stroke-width="12" stroke-dasharray="6.02 6.02"/><circle r="40"/><circle r="26"/><circle r="9"/></g></svg>
+    <div class="hero-text">
+      <div class="live"><i></i>LIVE PREVIEW</div>
+      <h1>Create your <span>Student ID</span></h1>
+      <p>Fill in the details, watch the card update instantly, then save, download or print it.</p>
+    </div>
+    <div class="meter" title="Card completion">
+      <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" class="m-bg"/><circle cx="40" cy="40" r="34" class="m-fg" id="mRing" stroke-dasharray="213.6" stroke-dashoffset="213.6"/></svg>
+      <div class="m-num"><b id="mPct">0%</b><small>complete</small></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel-top"><span>Card specification</span><span class="dots"><i></i><i></i><i></i></span></div>
+      <div class="panel-body">
+        <p class="notice hidden" id="existingNotice">You already have a saved ID card. Editing below will update it — one card per account.</p>
+
+        <div class="form-section">
+          <h3>Institution</h3>
+          <div class="field"><label>Institution name</label><input id="inst" value="RAGHU ENGINEERING COLLEGE"></div>
+          <div class="row2">
+            <div class="field"><label>Status line</label><input id="instSub" value="AUTONOMOUS"></div>
+            <div class="field"><label>Website</label><input id="instWeb" value="www.raghuenggcollege.com"></div>
+          </div>
+          <div class="field"><label>College logo</label>
+              <div class="photo-drop" id="logoDrop">Upload college logo</div>
+              <input type="file" id="logoInput" accept="image/*" style="display:none">
+            </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Student</h3>
+          <div class="field">
+            <label>Photo</label>
+            <div class="photo-drop tall" id="dropZone">Tap to upload a photo</div>
+            <input type="file" id="photoInput" accept="image/*" style="display:none">
+          </div>
+          <div class="field"><label>Full name</label><input id="name" placeholder="Full Name"></div>
+          <div class="field"><label>Course, branch &amp; batch</label><input id="course" value="B.Tech, CSE [AI&amp;ML] : 2024-2028"></div>
+          <div class="row2">
+            <div class="field"><label>Reg. / Roll No.</label><input id="regno" placeholder="Reg. No."></div>
+            <div class="field"><label>Blood group</label>
+              <select id="blood"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option selected>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Contact &amp; address</h3>
+          <div class="row2">
+            <div class="field"><label>Contact No.</label><input id="contact" value="9XXXXXXXXX"></div>
+            <div class="field"><label>College No.</label><input id="collno" value="08922-248001"></div>
+          </div>
+          <div class="field"><label>Address</label><textarea id="address" placeholder="Address"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-outer">
+      <div class="canvas">
+        <span class="tag">Preview · Front</span><span class="tag r">Autonomous</span>
+        <i class="cm a"></i><i class="cm b"></i><i class="cm c"></i><i class="cm d"></i>
+        <div class="stage">
+          <div id="card">
+            <div class="card-header">
+              <div class="card-header-row">
+                <div class="crest" id="crest">REC</div>
+                <div>
+                  <div class="h-inst" id="pInst">RAGHU ENGINEERING COLLEGE</div>
+                  <div class="h-sub" id="pInstSub">AUTONOMOUS</div>
+                  <div class="h-web" id="pInstWeb">www.raghuenggcollege.com</div>
+                </div>
+              </div>
+            </div>
+            <div class="id-banner"><span>IDENTITY CARD</span></div>
+            <div class="card-body">
+              <div class="top-row">
+                <div class="qr" id="qr"></div>
+                <div class="photo-box" id="photoBox">Photo</div>
+                <div class="blood"><small>Blood Grp</small><span id="pBlood">O+</span></div>
+              </div>
+              <div class="p-name" id="pName">FULL NAME</div>
+              <div class="kv"><b>&nbsp;</b><span id="pCourse">B.Tech, CSE [AI&amp;ML] : 2024-2028</span></div>
+              <div class="kv"><b>Reg.No</b><span id="pReg">: —</span></div>
+              <div class="kv"><b>Contact No.</b><span id="pContact">: 9XXXXXXXXX</span></div>
+              <div class="kv"><b>College No.</b><span id="pCollNo">: 08922-248001</span></div>
+              <div class="addr"><b>ADDRESS :</b><span id="pAddr"></span></div>
+            </div>
+            <div class="card-footer">
+              <div class="bc" id="barcode"></div>
+              <div class="sig"><div class="sig-line">Auth</div><div class="sig-label">Principal</div></div>
+            </div>
+            <div class="holo"></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" id="saveBtn">Save card</button>
+        <button class="btn-ghost" id="downloadBtn">Download</button>
+        <button class="btn-ghost" id="printBtn">Print</button>
+      </div>
+      <p class="hint">Saving stores this card against your account (one per account). Download exports a high-res image any time.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
